@@ -1,0 +1,126 @@
+1.first install stripe
+2.ng generate service stripe-payment
+3.ng generate module stripesystem
+4.ng generate component stripesystem/checkout
+5.ng generate component stripesystem/stipesystem
+6.ng generate interface checkout
+7.in the checkout.ts
+	export interface ICustomerPortal{}
+
+	export interface ISession{
+	    sessionId:string;
+	}
+
+	export interface checkout {
+	    id:string,
+	    priceId:string,
+	    name:string,
+	    price:string,
+	    features:string[]
+	}
+8.in index.html
+	<script src="https://js.stripe.com/v3/"></script>
+9.in stripe-payment.service.ts
+	  baseUrl: string = 'http://127.0.0.1:8000/api/payment';
+	  constructor(private http:HttpClient) { }
+
+	  getMembership():Observable<Customer>{
+	    return of({
+	      id: 'prod_ODhSkxQqMI76JM',
+	      priceId:'price_1NRG3ZITSBNqz237qpKiJ6u3',
+	      name:'Doa',
+	      price:'50',
+	      features:['up to 5 users','basic support']
+	    });
+
+	  }
+
+	  requestToCheckout(priceId:string):void{
+	    this.http.post<ISession>(this.baseUrl ,{
+	      priceId:priceId,
+	    }).subscribe((session)=>{
+	      this.redirectToCheckout(session.sessionId);
+	    })
+	  }
+
+	  redirectToCheckout(sessionId:string){
+	    const stripe = Stripe('pk_test_51NPPPpITSBNqz237y4RHbePnBFdR3asSmEgP0Wcg4ZplRUM5RfTISWu739wb5amnsEeEKZNUal1wFB6rgSByoywH00Vjm5a533');
+	    stripe.redirectToCheckout({
+	      sessionId:sessionId,                                                                                                                                                          
+	    })
+	  }
+10.in the stripesystem.module.ts
+	const routes: Routes = [
+	  { path: 'customer', component: CustomerComponent },
+	  {
+	    path: 'payment',
+	    component: CheckoutComponent,
+	  },
+	];
+
+
+	@NgModule({
+	  declarations: [
+	    CheckoutComponent
+	  ],
+	  imports: [
+	    RouterModule.forChild(routes),
+	    FormsModule,
+	    ReactiveFormsModule,
+	    NgbDropdownModule,
+	    CommonModule,
+	    NgbModule
+	  ],
+	  providers: [],
+	  exports: [],
+11.in checkout.component.ts
+	  $customer!:Observable<Customer>;
+
+	  constructor(private paymentService:PaymentService){}
+
+	  ngOnInit():void{
+	    this.$customer= this.paymentService.getMembership();
+	  }
+
+	  onSubmit(f:NgForm){
+	    this.paymentService.requestToCheckout(f.value.priceId);
+	  }
+12.in checkout.component.html
+	<div class="py-5 text-center">
+	<h2>Review Membership</h2>
+	</div>
+	<div class="container">
+		<div class="row justify-content-md-center">
+			<div class="col-8 mb-4" *ngIf="$customer|async as membership">
+				<h4 class="d-flex justify-content-between align-items-center mb-3">
+					<span class="text-muted">Membership Plan</span>
+					<span class="badge badge-secondary badge-pill">1</span>
+				</h4>
+				<ul class="list-group mb-3">
+					<li class="list-group-item d-flex justify-content-between lh-condensed">
+						<div>
+							<h6 class="my-0">{{membership.name}}</h6>
+							<small class="text-muted">Charge Monthly</small>
+						</div>
+						<span class="text-muted">{{membership.price}}</span>
+					</li>
+
+					<li class="list-group-item d-flex justify-content-between">
+						<span>Total (USD)(Monthly)</span>
+						<strong>{{membership.price}}</strong>
+					</li>
+				</ul>
+
+				<form class="card p-2" (ngSubmit)="onSubmit(f)" #f="ngForm">
+					<div class="input-group">
+						<input type="hidden" class="form-control" 	name="priceId" [ngModel]="membership.priceId" #membershipId="ngModel">
+						<button class="btn btn-primary btn-lg btn-block" type="submit">
+							Continue to checkout <i class="fas fa-credit-card"></i></button>
+						<a class="btn btn-success btn-lg btn-block mt-5" [routerLink]="['/memberships']">
+							<i class="fas fa-arrow-left"></i> Cancel</a>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</div>

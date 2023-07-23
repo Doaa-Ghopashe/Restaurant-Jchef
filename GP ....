@@ -1,0 +1,79 @@
+models : 
+
+Users Roles (Admin,Waiter, Cashier,Kitchen) 
+
+Users -> (Name , email ,password ,phone,images(o),role ((staff)))->sally
+
+Customers ->(name, phone,password,email)->😎️👍️DOAA
+
+Categories  ->(name , images , status) ->😎️👍️DOAA
+
+Products ->(name , description (o) ,  Total price  ,  image , dicount (o) ,status, category_id ,extra[cheese,...,,..,,](o)) ->sondos
+
+Ingridents ->  QTY(stock) , price , profit ,status ->sondos
+ 
+Product_Ingridents->  pro_id,ing_id, price[price+profit] ,QTY ,total [price[price+profit] * QTY]
+->sondos
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<
+Units -> name ->sondos
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<
+carts ->  total_price ,user_id -> 😎️👍️DOAA
+
+cart_product -> product_id ,user_id, total_price(product_price * QTY) , QTY (default:1) ->😎️👍️DOAA
+
+Orders -> id , total_price , employee_id(null) , dicount , tax(VAT 14%) , table_id , customer_id(null), payment_method ENUM('CASH','VISA') , (service_fee 12%), status ENUM('Pending',Accepted,'Prepare','Complete','Served','Canceled','Paid') -> sally
+
+order_product -> order_id ,product_id ,  total_price , QTY (product_price * QTY)  , status Enum('complete',cancel)[null] ->sally
+
+
+Tables -> number , guest_numbers,status enum('available','not available') [default:available] ->sally
+
+Reservation -> start_date, end_date->nullable, table_id,customer_id,status ENUM('cancel','progress', 'completed','Accepted') -> sondos
+
+
+
+Users :
+
+1- Admin -> handle all requests crud -> products
+				 crud -> Ingridents 
+				 crud -> units
+				 curd -> categoies 
+				 show reservations,
+				 crud Users(staff),
+				 
+				 
+
+2-  Waiter -> (has cart , make order to tables ,  get notification when kitchen finish order ,show  orders )
+{
+ 1- page to make orders (show products , add to cart , show cart )
+ 2- page to show  orders {filteration}
+}
+s
+3- Cashier -> (checkout orders , manage reservation of tables )
+{ 1-  page to(checkout) show all tables , detalis order in this table 
+  2- page to show all orders {filteration}
+  3- show reservation ,change_status
+}
+
+4- kitchen -> (show orders that made  and  when this are  finished this will changed status of order  )
+ { 
+  1- page to show orders status pending and when finish -> change the status to finished
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Home ->
+
+
